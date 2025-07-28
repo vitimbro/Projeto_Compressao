@@ -1,5 +1,10 @@
+# src/main.py
+
+import os
 import time
-import os  # Importa o módulo 'os' para interagir com o sistema
+# Importa as funções do módulo huffman
+from huffman import compress as huffman_compress
+from huffman import decompress as huffman_decompress
 
 def parse_fasta(filepath: str) -> str:
     """
@@ -7,54 +12,75 @@ def parse_fasta(filepath: str) -> str:
     como uma string única, sem cabeçalhos ou quebras de linha.
     """
     sequence_parts = []
-    # O 'try/except' foi movido para o bloco principal para evitar checagens duplicadas
     with open(filepath, 'r') as f:
         for line in f:
-            # Ignora as linhas de cabeçalho que começam com '>'
             if not line.startswith('>'):
-                # Remove espaços em branco e quebras de linha
                 sequence_parts.append(line.strip())
     return "".join(sequence_parts)
 
-# --- Exemplo de como usar ---
-if __name__ == "__main__":
-    print("Iniciando leitor de genoma...")
+def main():
+    """
+    Função principal que orquestra o processo de análise e compressão.
+    """
+    print("--- INÍCIO DO PROCESSO DE ANÁLISE DE COMPRESSÃO ---")
 
-    # Caminho para o seu arquivo de dados (lembre-se de ajustar para testar outros arquivos)
-    caminho_do_arquivo = 'data/humano_chromosome-22_sequence.fasta'
+    # --- CONFIGURAÇÃO DOS ARQUIVOS ---
+    # Altere esta variável para testar outros genomas
+    arquivo_base = "humano_chromosome-22_sequence"
     
-    print("-" * 40)
+    caminho_entrada = f'data/{arquivo_base}.fasta'
+    caminho_comprimido_huffman = f'data/{arquivo_base}_huffman.huff'
+    caminho_descomprimido_huffman = f'data/{arquivo_base}_huffman_decompressed.fasta'
 
-    # Verifica se o arquivo realmente existe no caminho especificado
-    if os.path.exists(caminho_do_arquivo):
-        
-        # --- INÍCIO DAS NOVAS LINHAS ---
+    # --- 1. ANÁLISE DO ARQUIVO DE ENTRADA ---
+    print("\n[ETAPA 1: Análise do Arquivo Original]")
+    if not os.path.exists(caminho_entrada):
+        print(f"ERRO: Arquivo de entrada não encontrado em '{caminho_entrada}'")
+        return
 
-        # 1. Imprime o nome do arquivo que está sendo lido
-        print(f"Analisando o arquivo: {caminho_do_arquivo}")
+    tamanho_original = os.path.getsize(caminho_entrada)
+    print(f"Arquivo a ser processado: {caminho_entrada}")
+    print(f"Tamanho Original: {tamanho_original / 1024:.2f} KB")
+    
+    texto_original = parse_fasta(caminho_entrada)
+    if not texto_original:
+        print("Arquivo FASTA vazio ou inválido.")
+        return
 
-        # 2. Pega o tamanho do arquivo em bytes e converte para KB
-        file_size_bytes = os.path.getsize(caminho_do_arquivo)
-        file_size_kb = file_size_bytes / 1024
-        print(f"Tamanho do arquivo: {file_size_kb:.2f} KB")
+    print(f"Número de Bases (Caracteres): {len(texto_original):,}")
 
-        # --- FIM DAS NOVAS LINHAS ---
+    # --- 2. PROCESSO DE COMPRESSÃO HUFFMAN ---
+    print("\n[ETAPA 2: Compressão com Huffman]")
+    start_time = time.perf_counter()
+    huffman_compress(texto_original, caminho_comprimido_huffman)
+    end_time = time.perf_counter()
+    
+    tamanho_comprimido_huffman = os.path.getsize(caminho_comprimido_huffman)
+    taxa_huffman = 100 * (1 - (tamanho_comprimido_huffman / tamanho_original))
+    
+    print(f"Arquivo comprimido salvo em: {caminho_comprimido_huffman}")
+    print(f"Tamanho Comprimido (Huffman): {tamanho_comprimido_huffman / 1024:.2f} KB")
+    print(f"Taxa de Compressão (Huffman): {taxa_huffman:.2f}%")
+    print(f"Tempo de Compressão (Huffman): {end_time - start_time:.4f} segundos")
 
-        # Medindo o tempo de leitura
-        start_time = time.perf_counter()
-        
-        sequencia_dna = parse_fasta(caminho_do_arquivo)
-        
-        end_time = time.perf_counter()
-        
-        print("\n--- Resultados da Leitura ---") # Adicionado para clareza
-        print(f"Sequência lida com sucesso!")
-        print(f"Número de bases: {len(sequencia_dna):,}")
-        print(f"Tempo de leitura: {end_time - start_time:.4f} segundos")
-        print(f"Primeiras 50 bases: {sequencia_dna[:50]}...")
+    # --- 3. PROCESSO DE DESCOMPRESSÃO E VERIFICAÇÃO HUFFMAN ---
+    print("\n[ETAPA 3: Descompressão e Verificação com Huffman]")
+    start_time = time.perf_counter()
+    huffman_decompress(caminho_comprimido_huffman, caminho_descomprimido_huffman)
+    end_time = time.perf_counter()
+    
+    print(f"Arquivo descomprimido salvo em: {caminho_descomprimido_huffman}")
+    print(f"Tempo de Descompressão (Huffman): {end_time - start_time:.4f} segundos")
 
+    # Verificação da integridade
+    texto_descomprimido = parse_fasta(caminho_descomprimido_huffman)
+    if texto_original == texto_descomprimido:
+        print("VERIFICAÇÃO BEM-SUCEDIDA: O arquivo original e o descomprimido são idênticos.")
     else:
-        # Mensagem de erro caso o arquivo não seja encontrado
-        print(f"ERRO: Arquivo não encontrado em '{caminho_do_arquivo}'")
+        print("ERRO NA VERIFICAÇÃO: Os arquivos são diferentes.")
     
-    print("-" * 40)
+    print("\n--- FIM DO PROCESSO ---")
+
+
+if __name__ == "__main__":
+    main()
