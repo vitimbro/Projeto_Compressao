@@ -77,6 +77,52 @@ def gerar_graficos_comparativos(resultados: dict, arquivo_base: str):
     plt.close()
 
 
+def gerar_relatorio_markdown(resultados: dict, arquivo_base: str, tamanho_original_kb: float, num_bases: int):
+    """
+    Gera um arquivo de relatório em formato Markdown com a tabela de resultados e os gráficos.
+    """
+    print("\n[ETAPA 6: Gerando Relatório em Markdown]")
+    
+    # Define os nomes dos arquivos de imagem que foram gerados
+    path_grafico_tamanho = f'{arquivo_base}_comparativo_tamanho.png'
+    path_grafico_tempo = f'{arquivo_base}_comparativo_tempo.png'
+    path_relatorio = f'RELATORIO_{arquivo_base}.md'
+
+    with open(path_relatorio, 'w', encoding='utf-8') as f:
+        # Título e informações do arquivo original
+        f.write(f"# Relatório de Análise Comparativa de Compressão\n\n")
+        f.write(f"## Arquivo Analisado\n")
+        f.write(f"- **Nome:** `{arquivo_base}.fasta`\n")
+        f.write(f"- **Tamanho Original:** {tamanho_original_kb:.2f} KB\n")
+        f.write(f"- **Total de Bases:** {num_bases:,}\n\n")
+        
+        # Tabela de Resultados
+        f.write("## Tabela de Resultados\n\n")
+        # Cabeçalho da tabela
+        f.write("| Algoritmo | Tamanho Comprimido (KB) | Taxa de Compressão (%) | Tempo Compressão (s) | Tempo Descompressão (s) |\n")
+        f.write("|---|---|---|---|---|\n")
+        
+        # Linhas da tabela
+        for algoritmo, res in resultados.items():
+            # Ignora as métricas extras para a tabela principal
+            tamanho = res['Tamanho Comprimido (KB)']
+            taxa = res['Taxa de Compressão (%)']
+            t_comp = res['Tempo de Compressão (s)']
+            t_decomp = res['Tempo de Descompressão (s)']
+            f.write(f"| **{algoritmo}** | {tamanho:.2f} | {taxa:.2f} | {t_comp:.4f} | {t_decomp:.4f} |\n")
+        
+        # Gráficos
+        f.write("\n## Gráficos Comparativos\n\n")
+        f.write("### Comparativo de Tamanho Final\n")
+        f.write(f"![Comparativo de Tamanho]({path_grafico_tamanho})\n\n")
+        
+        f.write("### Comparativo de Tempos de Execução\n")
+        f.write(f"![Comparativo de Tempo]({path_grafico_tempo})\n")
+
+    print(f"Relatório salvo em: '{path_relatorio}'")
+
+
+
 def main():
     """
     Função principal que orquestra todo o processo de análise e compressão.
@@ -84,7 +130,7 @@ def main():
     print("--- INÍCIO DO PROCESSO DE ANÁLISE COMPARATIVA DE COMPRESSÃO ---")
 
     # --- CONFIGURAÇÃO ---
-    arquivo_base = "bacteria_e-coli_sequence" # Altere para testar outros genomas
+    arquivo_base = "humano_chromosome-22_sequence" # Altere para testar outros genomas
     
     caminho_entrada = f'data/{arquivo_base}.fasta'
     # Huffman paths
@@ -215,6 +261,11 @@ def main():
 
     # --- 5. CHAMADA PARA GERAR GRÁFICOS ---
     gerar_graficos_comparativos(resultados, arquivo_base)
+
+    # --- 6. CHAMADA PARA GERAR RELATÓRIO MD ---
+    tamanho_original_kb = tamanho_original / 1024
+    num_bases = len(texto_original)
+    gerar_relatorio_markdown(resultados, arquivo_base, tamanho_original_kb, num_bases)
         
     print("--- FIM DO PROCESSO ---")
 
