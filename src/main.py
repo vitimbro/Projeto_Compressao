@@ -130,7 +130,7 @@ def main():
     print("--- INÍCIO DO PROCESSO DE ANÁLISE COMPARATIVA DE COMPRESSÃO ---")
 
     # --- CONFIGURAÇÃO ---
-    arquivo_base = "humano_chromosome-22_sequence" # Altere para testar outros genomas
+    arquivo_base = "plant_thaliana_sequence" # Altere para testar outros genomas
     
     caminho_entrada = f'data/{arquivo_base}.fasta'
     # Huffman paths
