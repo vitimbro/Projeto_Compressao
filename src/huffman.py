@@ -4,6 +4,7 @@ import heapq
 from collections import Counter
 import json
 from typing import Tuple, Counter as CounterType
+import math
 
 class Node:
     """
@@ -195,3 +196,21 @@ def decompress(caminho_entrada: str, caminho_saida: str):
     # 4. Salvar o arquivo descomprimido
     with open(caminho_saida, 'w') as f:
         f.write(texto_decodificado)
+
+
+def calcular_metricas_huffman(texto_original: str, frequencias: dict, codigos: dict) -> (float, float):
+    """
+    Calcula a Entropia de Shannon e o Comprimento Médio do Código Huffman.
+    """
+    total_caracteres = len(texto_original)
+    entropia = 0.0
+    comprimento_medio = 0.0
+
+    for char, freq in frequencias.items():
+        if freq > 0:
+            probabilidade = freq / total_caracteres
+            entropia -= probabilidade * math.log2(probabilidade)
+            # Soma ponderada do comprimento de cada código
+            comprimento_medio += probabilidade * len(codigos[char])
+            
+    return entropia, comprimento_medio

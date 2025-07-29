@@ -28,7 +28,7 @@ def compress(texto: str) -> List[int]:
     if sequencia_atual:
         resultado_comprimido.append(dicionario[sequencia_atual])
         
-    return resultado_comprimido
+    return resultado_comprimido, tamanho_dicionario
 
 def decompress(lista_codigos: List[int]) -> str:
     """

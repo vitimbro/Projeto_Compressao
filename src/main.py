@@ -1,13 +1,13 @@
-# src/main.py
 
 import os
 import time
 import json 
 import math
+import matplotlib.pyplot as plt
 
 # Importa as funções de ambos os módulos, usando 'as' para evitar conflito de nomes
-from huffman import compress as huffman_compress, decompress as huffman_decompress
-from lzw import compress as lzw_compress, decompress as lzw_decompress
+import huffman 
+import lzw     
 
 def parse_fasta(filepath: str) -> str:
     """
@@ -20,6 +20,63 @@ def parse_fasta(filepath: str) -> str:
                 sequence_parts.append(line.strip())
     return "".join(sequence_parts)
 
+
+def gerar_graficos_comparativos(resultados: dict, arquivo_base: str):
+    """
+    Gera e salva gráficos comparativos com base no dicionário de resultados.
+    """
+    print("\n[ETAPA 5: Gerando Gráficos Comparativos]")
+    
+    algoritmos = list(resultados.keys())
+    
+    # --- Gráfico 1: Tamanho Comprimido ---
+    tamanhos = [res['Tamanho Comprimido (KB)'] for res in resultados.values()]
+    
+    plt.figure(figsize=(10, 6))
+    bars = plt.bar(algoritmos, tamanhos, color=['#1f77b4', '#ff7f0e', '#2ca02c'])
+    
+    plt.title(f'Comparativo de Tamanho Comprimido\nArquivo: {arquivo_base}.fasta')
+    plt.ylabel('Tamanho Comprimido (KB)')
+    plt.xticks(rotation=8) # Rotaciona os nomes para não sobrepor
+    
+    # Adiciona os valores no topo das barras
+    for bar in bars:
+        yval = bar.get_height()
+        plt.text(bar.get_x() + bar.get_width()/2.0, yval, f'{yval:.2f} KB', va='bottom', ha='center')
+
+    # Salva a figura em um arquivo PNG
+    caminho_grafico_tamanho = f'{arquivo_base}_comparativo_tamanho.png'
+    plt.savefig(caminho_grafico_tamanho)
+    print(f"Gráfico de tamanho salvo em: '{caminho_grafico_tamanho}'")
+    plt.close() # Fecha a figura para liberar memória
+
+    # --- Gráfico 2: Tempos de Execução ---
+    tempos_compressao = [res['Tempo de Compressão (s)'] for res in resultados.values()]
+    tempos_descompressao = [res['Tempo de Descompressão (s)'] for res in resultados.values()]
+
+    x = range(len(algoritmos)) # Posições no eixo X
+    width = 0.35 # Largura das barras
+
+    fig, ax = plt.subplots(figsize=(12, 7))
+    rects1 = ax.bar([i - width/2 for i in x], tempos_compressao, width, label='Compressão', color='#d62728')
+    rects2 = ax.bar([i + width/2 for i in x], tempos_descompressao, width, label='Descompressão', color='#9467bd')
+
+    ax.set_ylabel('Tempo (segundos)')
+    ax.set_title(f'Comparativo de Tempos de Execução\nArquivo: {arquivo_base}.fasta')
+    ax.set_xticks(x)
+    ax.set_xticklabels(algoritmos, rotation=8)
+    ax.legend()
+
+    ax.bar_label(rects1, padding=3, fmt='%.2fs')
+    ax.bar_label(rects2, padding=3, fmt='%.2fs')
+
+    fig.tight_layout()
+    caminho_grafico_tempo = f'{arquivo_base}_comparativo_tempo.png'
+    plt.savefig(caminho_grafico_tempo)
+    print(f"Gráfico de tempo salvo em: '{caminho_grafico_tempo}'")
+    plt.close()
+
+
 def main():
     """
     Função principal que orquestra todo o processo de análise e compressão.
@@ -27,7 +84,7 @@ def main():
     print("--- INÍCIO DO PROCESSO DE ANÁLISE COMPARATIVA DE COMPRESSÃO ---")
 
     # --- CONFIGURAÇÃO ---
-    arquivo_base = "virus_phage-lambda_sequence" # Altere para testar outros genomas
+    arquivo_base = "bacteria_e-coli_sequence" # Altere para testar outros genomas
     
     caminho_entrada = f'data/{arquivo_base}.fasta'
     # Huffman paths
@@ -55,37 +112,44 @@ def main():
     # (Esta seção permanece inalterada)
     print("\n[ETAPA 2: Processamento com Huffman]")
     start_time = time.perf_counter()
-    huffman_compress(texto_original, caminho_comprimido_huffman)
+    huffman.compress(texto_original, caminho_comprimido_huffman)
     end_time = time.perf_counter()
     tempo_compress_huffman = end_time - start_time
     
     tamanho_comprimido_huffman = os.path.getsize(caminho_comprimido_huffman)
     
     start_time = time.perf_counter()
-    huffman_decompress(caminho_comprimido_huffman, caminho_descomprimido_huffman)
+    huffman.decompress(caminho_comprimido_huffman, caminho_descomprimido_huffman)
     end_time = time.perf_counter()
     tempo_decompress_huffman = end_time - start_time
     
     texto_descomprimido_huffman = parse_fasta(caminho_descomprimido_huffman)
     verificacao_huffman = "IDÊNTICOS" if texto_original == texto_descomprimido_huffman else "DIFERENTES"
 
+    # Para calcular as métricas, precisamos dos códigos e frequências
+    frequencias_huff = huffman.calcular_frequencia(texto_original)
+    fila_huff = huffman.criar_fila_de_prioridade(frequencias_huff)
+    arvore_huff = huffman.construir_arvore_huffman(fila_huff)
+    codigos_huffman = huffman.gerar_codigos_huffman(arvore_huff)
+    entropia, comp_medio = huffman.calcular_metricas_huffman(texto_original, frequencias_huff, codigos_huffman)
+
     resultados['Huffman'] = {
         'Tamanho Comprimido (KB)': tamanho_comprimido_huffman / 1024,
         'Taxa de Compressão (%)': 100 * (1 - (tamanho_comprimido_huffman / tamanho_original)),
         'Tempo de Compressão (s)': tempo_compress_huffman,
         'Tempo de Descompressão (s)': tempo_decompress_huffman,
-        'Verificação de Integridade': verificacao_huffman
+        'Verificação de Integridade': verificacao_huffman,
+        'Entropia de Shannon (bits/símbolo)': entropia,
+        'Comprimento Médio do Código (bits/símbolo)': comp_medio
     }
     os.remove(caminho_descomprimido_huffman)
 
     # --- 3. PROCESSO DE COMPRESSÃO LZW ---
     print("\n[ETAPA 3: Processamento com LZW]")
     start_time = time.perf_counter()
-    codigos_lzw = lzw_compress(texto_original)
+    codigos_lzw, tamanho_final_dicionario = lzw.compress(texto_original)
     end_time = time.perf_counter()
     tempo_compress_lzw = end_time - start_time
-
-    # --- INÍCIO DA MODIFICAÇÃO ---
 
     # Salva e mede o tamanho do arquivo REAL (JSON)
     with open(caminho_comprimido_lzw, 'w') as f:
@@ -102,10 +166,12 @@ def main():
 
     # Descompressão e verificação (continua igual)
     start_time = time.perf_counter()
-    texto_descomprimido_lzw = lzw_decompress(codigos_lzw)
+    texto_descomprimido_lzw = lzw.decompress(codigos_lzw)
     end_time = time.perf_counter()
     tempo_decompress_lzw = end_time - start_time
     verificacao_lzw = "IDÊNTICOS" if texto_original == texto_descomprimido_lzw else "DIFERENTES"
+
+    taxa_reducao_simbolos = len(texto_original) / len(codigos_lzw) if codigos_lzw else 0
 
     # Adiciona os resultados REAIS do LZW
     resultados['LZW (Real - JSON)'] = {
@@ -113,18 +179,23 @@ def main():
         'Taxa de Compressão (%)': 100 * (1 - (tamanho_real_lzw_bytes / tamanho_original)),
         'Tempo de Compressão (s)': tempo_compress_lzw,
         'Tempo de Descompressão (s)': tempo_decompress_lzw,
-        'Verificação de Integridade': verificacao_lzw
+        'Verificação de Integridade': verificacao_lzw,
+        'Tamanho Final do Dicionário': tamanho_final_dicionario,
+        'Taxa de Redução de Símbolos': taxa_reducao_simbolos
     }
 
     # Adiciona os resultados TEÓRICOS do LZW
     resultados['LZW (Teórico - Binário)'] = {
         'Tamanho Comprimido (KB)': tamanho_teorico_lzw_bytes / 1024,
-        'Taxa de Compressão (%)': 100 * (1 - (tamanho_teorico_lzw_bytes / tamanho_original))
+        'Taxa de Compressão (%)': 100 * (1 - (tamanho_teorico_lzw_bytes / tamanho_original)),
+        'Tempo de Compressão (s)': tempo_compress_lzw,     
+        'Tempo de Descompressão (s)': tempo_decompress_lzw,  
+        'Verificação de Integridade': verificacao_lzw,
+        'Tamanho Final do Dicionário': tamanho_final_dicionario,
+        'Taxa de Redução de Símbolos': taxa_reducao_simbolos     
     }
-    # --- FIM DA MODIFICAÇÃO ---
 
     # --- 4. EXIBIÇÃO DOS RESULTADOS COMPARATIVOS ---
-    # (Esta seção permanece inalterada e irá imprimir os 3 resultados)
     print("\n\n" + "="*50)
     print("--- RESULTADO FINAL COMPARATIVO ---")
     print("="*50)
@@ -140,6 +211,10 @@ def main():
             else:
                 print(f"  -> {metrica}: {valor}")
         print("-"*25)
+
+
+    # --- 5. CHAMADA PARA GERAR GRÁFICOS ---
+    gerar_graficos_comparativos(resultados, arquivo_base)
         
     print("--- FIM DO PROCESSO ---")
 
