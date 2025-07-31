@@ -111,6 +111,37 @@ def gerar_relatorio_markdown(resultados: dict, arquivo_base: str, tamanho_origin
             t_decomp = res['Tempo de Descompressão (s)']
             f.write(f"| **{algoritmo}** | {tamanho:.2f} | {taxa:.2f} | {t_comp:.4f} | {t_decomp:.4f} |\n")
         
+
+        f.write("\n## Métricas Avançadas e Análise Teórica\n\n")
+
+        # --- Análise Huffman ---
+        huffman_res = resultados.get('Huffman', {})
+        if 'Entropia de Shannon (bits/símbolo)' in huffman_res:
+            f.write("### Análise do Algoritmo Huffman\n\n")
+            entropia = huffman_res['Entropia de Shannon (bits/símbolo)']
+            comp_medio = huffman_res['Comprimento Médio do Código (bits/símbolo)']
+            
+            f.write(f"- **Entropia de Shannon:** `{entropia:.4f}` bits/símbolo\n")
+            f.write("  - *Significado: Representa o **limite teórico** da compressão para este arquivo. É o número mínimo de bits, em média, necessários para representar cada caractere com base em suas frequências.*\n\n")
+            
+            f.write(f"- **Comprimento Médio do Código:** `{comp_medio:.4f}` bits/símbolo\n")
+            f.write("  - *Significado: Representa o **desempenho real** da nossa implementação. Um valor próximo da entropia indica uma compressão Huffman de altíssima eficiência, mostrando que o algoritmo se aproximou do ótimo teórico.*\n\n")
+
+        # --- Análise LZW ---
+        lzw_res = resultados.get('LZW (Teórico - Binário)', {})
+        if 'Tamanho Final do Dicionário' in lzw_res:
+            f.write("### Análise do Algoritmo LZW\n\n")
+            dict_size = lzw_res['Tamanho Final do Dicionário']
+            reduction_rate = lzw_res['Taxa de Redução de Símbolos']
+
+            f.write(f"- **Tamanho Final do Dicionário:** `{dict_size:,}` entradas\n")
+            f.write("  - *Significado: Indica quantos padrões únicos e sequências repetitivas o algoritmo 'aprendeu'. Um número maior sugere que o arquivo possui uma estrutura com mais repetições que podem ser exploradas.*\n\n")
+
+            f.write(f"- **Taxa de Redução de Símbolos:** `{reduction_rate:.2f}`\n")
+            f.write("  - *Significado: Mostra, em média, quantos caracteres do texto original foram representados por **um único código LZW**. Um valor maior é um forte indicador de alta eficiência de compressão.*\n\n")
+
+
+
         # Gráficos
         f.write("\n## Gráficos Comparativos\n\n")
         f.write("### Comparativo de Tamanho Final\n")
@@ -129,23 +160,58 @@ def main():
     """
     print("--- INÍCIO DO PROCESSO DE ANÁLISE COMPARATIVA DE COMPRESSÃO ---")
 
-    # --- CONFIGURAÇÃO ---
-    arquivo_base = "plant_thaliana_sequence" # Altere para testar outros genomas
+    # --- SELEÇÃO DE ARQUIVO INTERATIVA ---
     
-    caminho_entrada = f'data/{arquivo_base}.fasta'
-    # Huffman paths
-    caminho_comprimido_huffman = f'data/{arquivo_base}_huffman.huff'
-    caminho_descomprimido_huffman = f'data/{arquivo_base}_huffman_decompressed.fasta'
-    # LZW path (para o arquivo JSON real)
-    caminho_comprimido_lzw = f'data/{arquivo_base}_lzw.lzw'
+    print("\n[ETAPA 0: Seleção de Arquivo]")
+    
+    # 1. Encontra todos os arquivos .fasta na pasta data/
+    data_path = 'data'
+    try:
+        fasta_files = [f for f in os.listdir(data_path) if f.endswith(('.fasta', '.fa'))]
+    except FileNotFoundError:
+        print(f"ERRO: A pasta '{data_path}' não foi encontrada. Crie-a e adicione seus arquivos .fasta.")
+        return
+
+    if not fasta_files:
+        print(f"ERRO: Nenhum arquivo .fasta encontrado na pasta '{data_path}'.")
+        return
+
+    # 2. Mostra os arquivos para o usuário
+    print("Por favor, escolha o arquivo de genoma para analisar:")
+    for i, filename in enumerate(fasta_files):
+        print(f"  [{i + 1}] {filename}")
+
+    # 3. Pede ao usuário para escolher um número
+    escolha = -1
+    while True:
+        try:
+            entrada = input(f"Digite o número do arquivo (1-{len(fasta_files)}): ")
+            escolha = int(entrada) - 1
+            if 0 <= escolha < len(fasta_files):
+                break
+            else:
+                print("Escolha inválida. Por favor, digite um número da lista.")
+        except ValueError:
+            print("Entrada inválida. Por favor, digite um número.")
+
+    # 4. Define o arquivo_base com base na escolha do usuário
+    arquivo_fasta_selecionado = fasta_files[escolha]
+    arquivo_base = os.path.splitext(arquivo_fasta_selecionado)[0]
+    
+    # --- FIM DA SELEÇÃO ---
+
+
+    # --- CONFIGURAÇÃO ---
+    
+    caminho_entrada = os.path.join('data', arquivo_fasta_selecionado) # Usa o nome completo
+    caminho_comprimido_huffman = os.path.join('data', f'{arquivo_base}_huffman.huff') # Usa o nome base
+    caminho_descomprimido_huffman = os.path.join('data', f'{arquivo_base}_huffman_decompressed.fasta') # Usa o nome base
+    caminho_comprimido_lzw = os.path.join('data', f'{arquivo_base}_lzw.lzw') # Usa o nome base
 
     resultados = {}
 
     # --- 1. ANÁLISE DO ARQUIVO ORIGINAL ---
     print("\n[ETAPA 1: Análise do Arquivo Original]")
-    if not os.path.exists(caminho_entrada):
-        print(f"ERRO: Arquivo de entrada não encontrado em '{caminho_entrada}'")
-        return
 
     tamanho_original = os.path.getsize(caminho_entrada)
     print(f"Arquivo a ser processado: {caminho_entrada}")
