@@ -4,52 +4,18 @@ Projeto em grupo da Disciplina de Algoritmos e Estrutura de Dados ll.
 
 O objetivo do projeto é implementar e realizar uma análise comparativa de desempenho entre dois algoritmos de compressão clássicos: Huffman (compressão estatística) e Lempel-Ziv-Welch - LZW (compressão baseada em dicionário). O estudo de caso escolhido para a análise foi a compressão de dados genômicos, utilizando sequências de DNA em formato FASTA.
 
-### Como Usar
+### Tecnologias Utilizadas
 
-Siga os passos abaixo para configurar e executar o projeto em sua máquina local.
+Linguagem: Python 3.10+
 
-1. Pré-requisitos
-- Python 3.8 ou superior
-- Git
+Bibliotecas Externas:
+- matplotlib: para a geração dos gráficos comparativos.
 
-1. Clonando o Repositório
+### Como Usar (via GitHub Codespaces)
 
-``` bash
-git clone [URL_DO_SEU_REPOSITORIO_NO_GITHUB]
-cd [NOME_DA_PASTA_DO_PROJETO]
-```
+Este projeto é otimizado para ser executado diretamente no seu navegador usando o GitHub Codespaces, sem a necessidade de nenhuma instalação local.
 
-3. Configuração do Ambiente Virtual
-
-É altamente recomendado usar um ambiente virtual para isolar as dependências do projeto.
-
-``` bash
-# Crie o ambiente virtual
-python -m venv venv
-
-# Ative o ambiente virtual
-
-# No Windows: 
-venv\Scripts\activate 
-# No macOS/Linux: 
-source venv/bin/activate
-```
-
-4. Instalação das Dependências
-
-Crie um arquivo chamado `requirements.txt` na pasta raiz do projeto com o seguinte conteúdo:
-
-```
-matplotlib
-```
-
-Em seguida, instale as dependências com o pip:
-
-``` bash
-pip install -r requirements.txt
-```
-
-5. Preparando os Dados
+0. Preparando os Dados
 
 Baixe os arquivos de genoma em formato .fasta que deseja analisar. Uma boa fonte é:
 
@@ -57,21 +23,46 @@ NCBI GenBank: https://www.ncbi.nlm.nih.gov/nuccore
 
 Coloque os arquivos baixados dentro da pasta data/.
 
-6. Executando a Análise
+1. Iniciando o Ambiente
+   
+- Na página principal deste repositório no GitHub, clique no botão verde "< > Code".
+- Mude para a aba "Codespaces".
+- Clique em "Create codespace on main". Aguarde um ou dois minutos enquanto o GitHub prepara seu ambiente de desenvolvimento na nuvem.
 
-Abra o arquivo src/main.py em um editor de texto.
+2. Configurando e Executando o Projeto
+   
+Uma vez que o ambiente carregar, siga os passos no terminal integrado que aparecerá na parte inferior da tela:
 
-Localize a variável arquivo_base e altere seu valor para o nome do arquivo que você deseja analisar (sem a extensão .fasta).
+- Crie e Ative o Ambiente Virtual:
 
-``` python
-# Em src/main.py
-arquivo_base = "virus_phage-lambda_sequence" # Altere para "bacteria_e-coli_sequence" ou outro
+``` bash
+python -m venv venv
+source venv/bin/activate
 ```
 
-Salve o arquivo.
+- Instale as Dependências:
 
-No terminal (com o ambiente virtual ainda ativo), execute o script principal:
+``` bash
+pip install -r requirements.txt
+```
+
+- Execute a Análise:
 
 ``` bash
 python src/main.py
 ```
+
+O programa irá listar os arquivos .fasta disponíveis na pasta data/ e pedirá para você escolher um para analisar.
+
+
+3. Visualizando os Resultados
+   
+Relatório no Terminal: A tabela comparativa final será exibida diretamente no terminal.
+
+Arquivos Gerados: Após a execução, os gráficos (.png) e o relatório (.md) aparecerão nas pastas graficos/ e relatorios/, respectivamente, no explorador de arquivos à esquerda.
+
+Visualizando o Relatório Formatado:
+
+Clique no arquivo de relatório gerado (ex: relatorios/RELATORIO_bacteria_e-coli_sequence.md).
+
+Para visualizar o arquivo de forma formatada e bonita (com tabelas e imagens), use o atalho Ctrl + Shift + V.
