@@ -26,6 +26,11 @@ def gerar_graficos_comparativos(resultados: dict, arquivo_base: str):
     Gera e salva gráficos comparativos com base no dicionário de resultados.
     """
     print("\n[ETAPA 5: Gerando Gráficos Comparativos]")
+
+    # Garante que a pasta 'graficos' exista
+    output_dir = 'graficos'
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
     
     algoritmos = list(resultados.keys())
     
@@ -45,7 +50,7 @@ def gerar_graficos_comparativos(resultados: dict, arquivo_base: str):
         plt.text(bar.get_x() + bar.get_width()/2.0, yval, f'{yval:.2f} KB', va='bottom', ha='center')
 
     # Salva a figura em um arquivo PNG
-    caminho_grafico_tamanho = f'{arquivo_base}_comparativo_tamanho.png'
+    caminho_grafico_tamanho = os.path.join(output_dir, f'{arquivo_base}_comparativo_tamanho.png')
     plt.savefig(caminho_grafico_tamanho)
     print(f"Gráfico de tamanho salvo em: '{caminho_grafico_tamanho}'")
     plt.close() # Fecha a figura para liberar memória
@@ -71,7 +76,7 @@ def gerar_graficos_comparativos(resultados: dict, arquivo_base: str):
     ax.bar_label(rects2, padding=3, fmt='%.2fs')
 
     fig.tight_layout()
-    caminho_grafico_tempo = f'{arquivo_base}_comparativo_tempo.png'
+    caminho_grafico_tempo = os.path.join(output_dir, f'{arquivo_base}_comparativo_tempo.png')
     plt.savefig(caminho_grafico_tempo)
     print(f"Gráfico de tempo salvo em: '{caminho_grafico_tempo}'")
     plt.close()
@@ -82,11 +87,16 @@ def gerar_relatorio_markdown(resultados: dict, arquivo_base: str, tamanho_origin
     Gera um arquivo de relatório em formato Markdown com a tabela de resultados e os gráficos.
     """
     print("\n[ETAPA 6: Gerando Relatório em Markdown]")
+
+    # Garante que a pasta 'relatorios' exista
+    output_dir_report = 'relatorios'
+    if not os.path.exists(output_dir_report):
+        os.makedirs(output_dir_report)
     
     # Define os nomes dos arquivos de imagem que foram gerados
-    path_grafico_tamanho = f'{arquivo_base}_comparativo_tamanho.png'
-    path_grafico_tempo = f'{arquivo_base}_comparativo_tempo.png'
-    path_relatorio = f'RELATORIO_{arquivo_base}.md'
+    path_grafico_tamanho = f'../graficos/{arquivo_base}_comparativo_tamanho.png'
+    path_grafico_tempo = f'../graficos/{arquivo_base}_comparativo_tempo.png'
+    path_relatorio = os.path.join(output_dir_report, f'RELATORIO_{arquivo_base}.md')
 
     with open(path_relatorio, 'w', encoding='utf-8') as f:
         # Título e informações do arquivo original
