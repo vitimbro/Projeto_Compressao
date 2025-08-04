@@ -2,16 +2,16 @@
 
 ## Arquivo Analisado
 - **Nome:** `virus_phage-lambda_sequence.fasta`
-- **Tamanho Original:** 48.10 KB
+- **Tamanho Original:** 48.78 KB
 - **Total de Bases:** 48,502
 
 ## Tabela de Resultados
 
 | Algoritmo | Tamanho Comprimido (KB) | Taxa de Compressão (%) | Tempo Compressão (s) | Tempo Descompressão (s) |
 |---|---|---|---|---|
-| **Huffman** | 11.89 | 75.28 | 0.0197 | 0.0362 |
-| **LZW (Real - JSON)** | 49.75 | -3.43 | 0.0088 | 0.0028 |
-| **LZW (Teórico - Binário)** | 15.25 | 68.30 | 0.0088 | 0.0028 |
+| **Huffman** | 11.89 | 75.62 | 0.0090 | 0.0331 |
+| **LZW (Teórico - Binário)** | 15.25 | 68.74 | 0.0117 | 0.0031 |
+| **LZW (Real - JSON)** | 49.75 | -1.99 | --- | --- |
 
 ## Métricas Avançadas e Análise Teórica
 
@@ -30,6 +30,21 @@
 
 - **Taxa de Redução de Símbolos:** `5.44`
   - *Significado: Mostra, em média, quantos caracteres do texto original foram representados por **um único código LZW**. Um valor maior é um forte indicador de alta eficiência de compressão.*
+
+
+## Análise de Complexidade de Espaço (Uso de Memória)
+
+A seguir, uma análise do uso de memória das principais estruturas de dados de cada algoritmo.
+
+### Huffman
+
+- **Overhead (Tamanho do Cabeçalho):** `0.05` KB
+  - *Significado: Representa o custo de espaço fixo do Huffman. É o tamanho da tabela de frequências que precisa ser armazenada junto com os dados para permitir a descompressão. Este valor é geralmente muito pequeno e independe do tamanho do arquivo.*
+
+### LZW
+
+- **Estrutura Principal (Dicionário):** `9,176` entradas, ocupando uma memória estimada de **`677.00` KB**
+  - *Significado: Representa o custo de espaço dinâmico do LZW. O dicionário cresce à medida que o algoritmo processa o arquivo, consumindo memória proporcional à quantidade e ao tamanho dos padrões encontrados.*
 
 
 ## Gráficos Comparativos

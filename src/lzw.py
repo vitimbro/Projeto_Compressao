@@ -1,15 +1,17 @@
 # src/lzw.py
 
-from typing import List, Dict
+from typing import List, Dict, Tuple
 
-def compress(texto: str) -> List[int]:
+def compress(texto: str) -> Tuple[List[int], int, Dict[str, int]]:
     """
     Comprime um texto usando o algoritmo LZW.
+    Retorna os códigos, o tamanho final do dicionário e o dicionário em si.
     """
     if not texto:
-        return []
+        # Retorna valores padrão consistentes com o tipo de retorno
+        return [], 256, {chr(i): i for i in range(256)}
         
-    tamanho_dicionario = 256 # Inicia com o alfabeto ASCII básico
+    tamanho_dicionario = 256
     dicionario: Dict[str, int] = {chr(i): i for i in range(tamanho_dicionario)}
 
     sequencia_atual = ""
@@ -28,7 +30,9 @@ def compress(texto: str) -> List[int]:
     if sequencia_atual:
         resultado_comprimido.append(dicionario[sequencia_atual])
         
-    return resultado_comprimido, tamanho_dicionario
+    # Retorna os 3 valores que main.py irá usar
+    return resultado_comprimido, tamanho_dicionario, dicionario
+
 
 def decompress(lista_codigos: List[int]) -> str:
     """

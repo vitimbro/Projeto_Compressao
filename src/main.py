@@ -4,6 +4,7 @@ import time
 import json 
 import math
 import matplotlib.pyplot as plt
+import sys
 
 # Importa as funções de ambos os módulos, usando 'as' para evitar conflito de nomes
 import huffman 
@@ -56,20 +57,26 @@ def gerar_graficos_comparativos(resultados: dict, arquivo_base: str):
     plt.close() # Fecha a figura para liberar memória
 
     # --- Gráfico 2: Tempos de Execução ---
-    tempos_compressao = [res['Tempo de Compressão (s)'] for res in resultados.values()]
-    tempos_descompressao = [res['Tempo de Descompressão (s)'] for res in resultados.values()]
 
-    x = range(len(algoritmos)) # Posições no eixo X
-    width = 0.35 # Largura das barras
+    # Filtra os dados para remover a entrada redundante do LZW Real
+    algoritmos_tempo = [a for a in algoritmos if a != 'LZW (Real - JSON)']
+    # Limpa os nomes para legendas mais bonitas no gráfico
+    algoritmos_tempo_labels = [a.replace(' (Teórico - Binário)', '') for a in algoritmos_tempo]
 
-    fig, ax = plt.subplots(figsize=(12, 7))
+    tempos_compressao = [resultados[a]['Tempo de Compressão (s)'] for a in algoritmos_tempo]
+    tempos_descompressao = [resultados[a]['Tempo de Descompressão (s)'] for a in algoritmos_tempo]
+
+    x = range(len(algoritmos_tempo))
+    width = 0.35
+
+    fig, ax = plt.subplots(figsize=(10, 7))
     rects1 = ax.bar([i - width/2 for i in x], tempos_compressao, width, label='Compressão', color='#d62728')
     rects2 = ax.bar([i + width/2 for i in x], tempos_descompressao, width, label='Descompressão', color='#9467bd')
 
     ax.set_ylabel('Tempo (segundos)')
     ax.set_title(f'Comparativo de Tempos de Execução\nArquivo: {arquivo_base}.fasta')
     ax.set_xticks(x)
-    ax.set_xticklabels(algoritmos, rotation=8)
+    ax.set_xticklabels(algoritmos_tempo_labels) # Usa os nomes limpos
     ax.legend()
 
     ax.bar_label(rects1, padding=3, fmt='%.2fs')
@@ -114,12 +121,17 @@ def gerar_relatorio_markdown(resultados: dict, arquivo_base: str, tamanho_origin
         
         # Linhas da tabela
         for algoritmo, res in resultados.items():
-            # Ignora as métricas extras para a tabela principal
-            tamanho = res['Tamanho Comprimido (KB)']
-            taxa = res['Taxa de Compressão (%)']
-            t_comp = res['Tempo de Compressão (s)']
-            t_decomp = res['Tempo de Descompressão (s)']
-            f.write(f"| **{algoritmo}** | {tamanho:.2f} | {taxa:.2f} | {t_comp:.4f} | {t_decomp:.4f} |\n")
+            tamanho = res.get('Tamanho Comprimido (KB)', 0)
+            taxa = res.get('Taxa de Compressão (%)', 0)
+            # Usa .get() para fornecer um valor padrão caso a chave não exista
+            t_comp = res.get('Tempo de Compressão (s)', '---')
+            t_decomp = res.get('Tempo de Descompressão (s)', '---')
+
+            # Formata os valores numéricos ou mantém o texto '---'
+            t_comp_str = f"{t_comp:.4f}" if isinstance(t_comp, float) else t_comp
+            t_decomp_str = f"{t_decomp:.4f}" if isinstance(t_decomp, float) else t_decomp
+            
+            f.write(f"| **{algoritmo}** | {tamanho:.2f} | {taxa:.2f} | {t_comp_str} | {t_decomp_str} |\n")
         
 
         f.write("\n## Métricas Avançadas e Análise Teórica\n\n")
@@ -150,6 +162,27 @@ def gerar_relatorio_markdown(resultados: dict, arquivo_base: str, tamanho_origin
             f.write(f"- **Taxa de Redução de Símbolos:** `{reduction_rate:.2f}`\n")
             f.write("  - *Significado: Mostra, em média, quantos caracteres do texto original foram representados por **um único código LZW**. Um valor maior é um forte indicador de alta eficiência de compressão.*\n\n")
 
+        # Nova seção para análise de espaço
+        f.write("\n## Análise de Complexidade de Espaço (Uso de Memória)\n\n")
+        f.write("A seguir, uma análise do uso de memória das principais estruturas de dados de cada algoritmo.\n\n")
+
+        # Análise de Espaço Huffman
+        huffman_res = resultados.get('Huffman', {})
+        if 'Overhead de Espaço (Cabeçalho KB)' in huffman_res:
+            f.write("### Huffman\n\n")
+            overhead_huffman = huffman_res['Overhead de Espaço (Cabeçalho KB)']
+            f.write(f"- **Overhead (Tamanho do Cabeçalho):** `{overhead_huffman:.2f}` KB\n")
+            f.write("  - *Significado: Representa o custo de espaço fixo do Huffman. É o tamanho da tabela de frequências que precisa ser armazenada junto com os dados para permitir a descompressão. Este valor é geralmente muito pequeno e independe do tamanho do arquivo.*\n\n")
+
+        # Análise de Espaço LZW
+        lzw_res = resultados.get('LZW (Teórico - Binário)', {})
+        if 'Tamanho Final do Dicionário' in lzw_res:
+            f.write("### LZW\n\n")
+            dict_size_entries = lzw_res['Tamanho Final do Dicionário']
+            dict_size_kb = lzw_res['Uso de Memória (Dicionário KB)'] # Pega a nova métrica
+
+            f.write(f"- **Estrutura Principal (Dicionário):** `{dict_size_entries:,}` entradas, ocupando uma memória estimada de **`{dict_size_kb:.2f}` KB**\n")
+            f.write("  - *Significado: Representa o custo de espaço dinâmico do LZW. O dicionário cresce à medida que o algoritmo processa o arquivo, consumindo memória proporcional à quantidade e ao tamanho dos padrões encontrados.*\n\n")
 
 
         # Gráficos
@@ -161,6 +194,21 @@ def gerar_relatorio_markdown(resultados: dict, arquivo_base: str, tamanho_origin
         f.write(f"![Comparativo de Tempo]({path_grafico_tempo})\n")
 
     print(f"Relatório salvo em: '{path_relatorio}'")
+
+
+# --- Adicione esta nova função ao seu main.py ---
+def estimar_tamanho_dicionario_lzw(dicionario: dict) -> float:
+    """
+    Estima o tamanho em memória de um dicionário LZW em KB.
+    Soma o tamanho de todas as chaves (strings) e valores (ints).
+    """
+    tamanho_bytes = 0
+    for chave, valor in dicionario.items():
+        tamanho_bytes += sys.getsizeof(chave)
+        tamanho_bytes += sys.getsizeof(valor)
+    
+    return tamanho_bytes / 1024
+
 
 
 
@@ -234,7 +282,7 @@ def main():
     # (Esta seção permanece inalterada)
     print("\n[ETAPA 2: Processamento com Huffman]")
     start_time = time.perf_counter()
-    huffman.compress(texto_original, caminho_comprimido_huffman)
+    tamanho_header_huffman = huffman.compress(texto_original, caminho_comprimido_huffman)
     end_time = time.perf_counter()
     tempo_compress_huffman = end_time - start_time
     
@@ -262,14 +310,15 @@ def main():
         'Tempo de Descompressão (s)': tempo_decompress_huffman,
         'Verificação de Integridade': verificacao_huffman,
         'Entropia de Shannon (bits/símbolo)': entropia,
-        'Comprimento Médio do Código (bits/símbolo)': comp_medio
+        'Comprimento Médio do Código (bits/símbolo)': comp_medio,
+        'Overhead de Espaço (Cabeçalho KB)': tamanho_header_huffman / 1024
     }
     os.remove(caminho_descomprimido_huffman)
 
     # --- 3. PROCESSO DE COMPRESSÃO LZW ---
     print("\n[ETAPA 3: Processamento com LZW]")
     start_time = time.perf_counter()
-    codigos_lzw, tamanho_final_dicionario = lzw.compress(texto_original)
+    codigos_lzw, tamanho_final_dicionario, dicionario_final_lzw = lzw.compress(texto_original)
     end_time = time.perf_counter()
     tempo_compress_lzw = end_time - start_time
 
@@ -295,27 +344,27 @@ def main():
 
     taxa_reducao_simbolos = len(texto_original) / len(codigos_lzw) if codigos_lzw else 0
 
-    # Adiciona os resultados REAIS do LZW
-    resultados['LZW (Real - JSON)'] = {
-        'Tamanho Comprimido (KB)': tamanho_real_lzw_bytes / 1024,
-        'Taxa de Compressão (%)': 100 * (1 - (tamanho_real_lzw_bytes / tamanho_original)),
-        'Tempo de Compressão (s)': tempo_compress_lzw,
-        'Tempo de Descompressão (s)': tempo_decompress_lzw,
-        'Verificação de Integridade': verificacao_lzw,
-        'Tamanho Final do Dicionário': tamanho_final_dicionario,
-        'Taxa de Redução de Símbolos': taxa_reducao_simbolos
-    }
+    memoria_dicionario_lzw_kb = estimar_tamanho_dicionario_lzw(dicionario_final_lzw)
+
 
     # Adiciona os resultados TEÓRICOS do LZW
     resultados['LZW (Teórico - Binário)'] = {
         'Tamanho Comprimido (KB)': tamanho_teorico_lzw_bytes / 1024,
         'Taxa de Compressão (%)': 100 * (1 - (tamanho_teorico_lzw_bytes / tamanho_original)),
-        'Tempo de Compressão (s)': tempo_compress_lzw,     
-        'Tempo de Descompressão (s)': tempo_decompress_lzw,  
+        'Tempo de Compressão (s)': tempo_compress_lzw,
+        'Tempo de Descompressão (s)': tempo_decompress_lzw,
         'Verificação de Integridade': verificacao_lzw,
         'Tamanho Final do Dicionário': tamanho_final_dicionario,
-        'Taxa de Redução de Símbolos': taxa_reducao_simbolos     
+        'Taxa de Redução de Símbolos': taxa_reducao_simbolos,
+        'Uso de Memória (Dicionário KB)': memoria_dicionario_lzw_kb
     }
+    
+    # Adiciona os resultados REAIS do LZW (apenas com as métricas de tamanho)
+    resultados['LZW (Real - JSON)'] = {
+        'Tamanho Comprimido (KB)': tamanho_real_lzw_bytes / 1024,
+        'Taxa de Compressão (%)': 100 * (1 - (tamanho_real_lzw_bytes / tamanho_original))
+    }
+
 
     # --- 4. EXIBIÇÃO DOS RESULTADOS COMPARATIVOS ---
     print("\n\n" + "="*50)

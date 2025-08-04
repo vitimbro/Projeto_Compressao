@@ -2,16 +2,16 @@
 
 ## Arquivo Analisado
 - **Nome:** `humano_chromosome-22_sequence.fasta`
-- **Tamanho Original:** 50336.44 KB
+- **Tamanho Original:** 51045.41 KB
 - **Total de Bases:** 50,818,468
 
 ## Tabela de Resultados
 
 | Algoritmo | Tamanho Comprimido (KB) | Taxa de Compressão (%) | Tempo Compressão (s) | Tempo Descompressão (s) |
 |---|---|---|---|---|
-| **Huffman** | 15772.12 | 68.67 | 10.8043 | 17.9298 |
-| **LZW (Real - JSON)** | 29263.49 | 41.86 | 22.2331 | 4.3341 |
-| **LZW (Teórico - Binário)** | 9722.73 | 80.68 | 22.2331 | 4.3341 |
+| **Huffman** | 15772.12 | 69.10 | 8.4074 | 12.4963 |
+| **LZW (Teórico - Binário)** | 9722.73 | 80.95 | 21.9206 | 3.5804 |
+| **LZW (Real - JSON)** | 29263.49 | 42.67 | --- | --- |
 
 ## Métricas Avançadas e Análise Teórica
 
@@ -30,6 +30,21 @@
 
 - **Taxa de Redução de Símbolos:** `14.04`
   - *Significado: Mostra, em média, quantos caracteres do texto original foram representados por **um único código LZW**. Um valor maior é um forte indicador de alta eficiência de compressão.*
+
+
+## Análise de Complexidade de Espaço (Uso de Memória)
+
+A seguir, uma análise do uso de memória das principais estruturas de dados de cada algoritmo.
+
+### Huffman
+
+- **Overhead (Tamanho do Cabeçalho):** `0.09` KB
+  - *Significado: Representa o custo de espaço fixo do Huffman. É o tamanho da tabela de frequências que precisa ser armazenada junto com os dados para permitir a descompressão. Este valor é geralmente muito pequeno e independe do tamanho do arquivo.*
+
+### LZW
+
+- **Estrutura Principal (Dicionário):** `3,620,645` entradas, ocupando uma memória estimada de **`297134.45` KB**
+  - *Significado: Representa o custo de espaço dinâmico do LZW. O dicionário cresce à medida que o algoritmo processa o arquivo, consumindo memória proporcional à quantidade e ao tamanho dos padrões encontrados.*
 
 
 ## Gráficos Comparativos

@@ -9,9 +9,9 @@
 
 | Algoritmo | Tamanho Comprimido (KB) | Taxa de Compressão (%) | Tempo Compressão (s) | Tempo Descompressão (s) |
 |---|---|---|---|---|
-| **Huffman** | 8130.76 | 73.40 | 6.0937 | 7.5462 |
-| **LZW (Real - JSON)** | 24087.23 | 21.19 | 10.1763 | 3.4615 |
-| **LZW (Teórico - Binário)** | 8132.86 | 73.39 | 10.1763 | 3.4615 |
+| **Huffman** | 8130.76 | 73.40 | 5.2485 | 6.8645 |
+| **LZW (Teórico - Binário)** | 8132.86 | 73.39 | 9.8323 | 3.0631 |
+| **LZW (Real - JSON)** | 24087.23 | 21.19 | --- | --- |
 
 ## Métricas Avançadas e Análise Teórica
 
@@ -30,6 +30,21 @@
 
 - **Taxa de Redução de Símbolos:** `10.05`
   - *Significado: Mostra, em média, quantos caracteres do texto original foram representados por **um único código LZW**. Um valor maior é um forte indicador de alta eficiência de compressão.*
+
+
+## Análise de Complexidade de Espaço (Uso de Memória)
+
+A seguir, uma análise do uso de memória das principais estruturas de dados de cada algoritmo.
+
+### Huffman
+
+- **Overhead (Tamanho do Cabeçalho):** `0.12` KB
+  - *Significado: Representa o custo de espaço fixo do Huffman. É o tamanho da tabela de frequências que precisa ser armazenada junto com os dados para permitir a descompressão. Este valor é geralmente muito pequeno e independe do tamanho do arquivo.*
+
+### LZW
+
+- **Estrutura Principal (Dicionário):** `3,028,635` entradas, ocupando uma memória estimada de **`236752.48` KB**
+  - *Significado: Representa o custo de espaço dinâmico do LZW. O dicionário cresce à medida que o algoritmo processa o arquivo, consumindo memória proporcional à quantidade e ao tamanho dos padrões encontrados.*
 
 
 ## Gráficos Comparativos

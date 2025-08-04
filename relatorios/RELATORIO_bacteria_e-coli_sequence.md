@@ -2,16 +2,16 @@
 
 ## Arquivo Analisado
 - **Nome:** `bacteria_e-coli_sequence.fasta`
-- **Tamanho Original:** 4597.69 KB
+- **Tamanho Original:** 4662.45 KB
 - **Total de Bases:** 4,641,652
 
 ## Tabela de Resultados
 
 | Algoritmo | Tamanho Comprimido (KB) | Taxa de Compressão (%) | Tempo Compressão (s) | Tempo Descompressão (s) |
 |---|---|---|---|---|
-| **Huffman** | 1133.27 | 75.35 | 0.9307 | 1.0761 |
-| **LZW (Real - JSON)** | 3941.95 | 14.26 | 1.2602 | 0.5274 |
-| **LZW (Teórico - Binário)** | 1329.53 | 71.08 | 1.2602 | 0.5274 |
+| **Huffman** | 1133.27 | 75.69 | 0.8284 | 1.1400 |
+| **LZW (Teórico - Binário)** | 1329.53 | 71.48 | 0.9803 | 0.3495 |
+| **LZW (Real - JSON)** | 3941.95 | 15.45 | --- | --- |
 
 ## Métricas Avançadas e Análise Teórica
 
@@ -30,6 +30,21 @@
 
 - **Taxa de Redução de Símbolos:** `8.52`
   - *Significado: Mostra, em média, quantos caracteres do texto original foram representados por **um único código LZW**. Um valor maior é um forte indicador de alta eficiência de compressão.*
+
+
+## Análise de Complexidade de Espaço (Uso de Memória)
+
+A seguir, uma análise do uso de memória das principais estruturas de dados de cada algoritmo.
+
+### Huffman
+
+- **Overhead (Tamanho do Cabeçalho):** `0.05` KB
+  - *Significado: Representa o custo de espaço fixo do Huffman. É o tamanho da tabela de frequências que precisa ser armazenada junto com os dados para permitir a descompressão. Este valor é geralmente muito pequeno e independe do tamanho do arquivo.*
+
+### LZW
+
+- **Estrutura Principal (Dicionário):** `544,831` entradas, ocupando uma memória estimada de **`41779.54` KB**
+  - *Significado: Representa o custo de espaço dinâmico do LZW. O dicionário cresce à medida que o algoritmo processa o arquivo, consumindo memória proporcional à quantidade e ao tamanho dos padrões encontrados.*
 
 
 ## Gráficos Comparativos

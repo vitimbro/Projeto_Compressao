@@ -109,7 +109,7 @@ def _preencher_texto_codificado(texto_codificado: str) -> Tuple[str, int]:
     return texto_preenchido, padding_amount
 
 
-def compress(texto: str, caminho_saida: str):
+def compress(texto: str, caminho_saida: str) -> int:
     """
     Função principal que comprime um texto e salva em um arquivo de saída.
     """
@@ -137,6 +137,8 @@ def compress(texto: str, caminho_saida: str):
 
         byte_array = bytearray(int(texto_preenchido[i:i+8], 2) for i in range(0, len(texto_preenchido), 8))
         f.write(bytes(byte_array))
+
+        return len(header) # Retorna o tamanho do cabeçalho em bytes
 
 
 def decompress(caminho_entrada: str, caminho_saida: str):
