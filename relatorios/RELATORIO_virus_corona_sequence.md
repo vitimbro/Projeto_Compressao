@@ -9,8 +9,8 @@
 
 | Algoritmo | Tamanho Comprimido (KB) | Taxa de Compressão (%) | Tempo Compressão (s) | Tempo Descompressão (s) |
 |---|---|---|---|---|
-| **Huffman** | 7.35 | 75.62 | 0.0054 | 0.0095 |
-| **LZW (Teórico - Binário)** | 9.08 | 69.86 | 0.0068 | 0.0016 |
+| **Huffman** | 7.35 | 75.62 | 0.0121 | 0.0179 |
+| **LZW (Teórico - Binário)** | 9.08 | 69.86 | 0.0111 | 0.0048 |
 | **LZW (Real - JSON)** | 31.33 | -3.95 | --- | --- |
 
 ## Métricas Avançadas e Análise Teórica

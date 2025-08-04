@@ -1,0 +1,31 @@
+{
+    "Huffman": {
+        "Tamanho Comprimido (KB)": 52854.66015625,
+        "Taxa de Compress\u00e3o (%)": 72.6570912885698,
+        "Tempo de Compress\u00e3o (s)": 87.18074159999378,
+        "Tempo de Descompress\u00e3o (s)": 122.92427770001814,
+        "Verifica\u00e7\u00e3o de Integridade": "ID\u00caNTICOS",
+        "Entropia de Shannon (bits/s\u00edmbolo)": 2.065547589497084,
+        "Comprimento M\u00e9dio do C\u00f3digo (bits/s\u00edmbolo)": 2.2186792891177136,
+        "Overhead de Espa\u00e7o (Cabe\u00e7alho KB)": 0.072265625
+    },
+    "LZW (Te\u00f3rico - Bin\u00e1rio)": {
+        "Tamanho Comprimido (KB)": 47629.3125,
+        "Taxa de Compress\u00e3o (%)": 75.36028157544243,
+        "Tempo de Compress\u00e3o (s)": 173.06169370003045,
+        "Tempo de Descompress\u00e3o (s)": 37.36696830007713,
+        "Verifica\u00e7\u00e3o de Integridade": "ID\u00caNTICOS",
+        "Tamanho Final do Dicion\u00e1rio": 16257727,
+        "Taxa de Redu\u00e7\u00e3o de S\u00edmbolos": 12.003974480165182,
+        "Uso de Mem\u00f3ria (Dicion\u00e1rio KB)": 1301948.68359375
+    },
+    "LZW (Real - JSON)": {
+        "Tamanho Comprimido (KB)": 140417.2978515625,
+        "Taxa de Compress\u00e3o (%)": 27.35896238267702
+    },
+    "info_arquivo": {
+        "nome_base": "camundongo_musculus_sequence",
+        "tamanho_original_kb": 193302.990234375,
+        "num_bases": 195154279
+    }
+}

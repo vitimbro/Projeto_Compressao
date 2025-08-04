@@ -1,0 +1,31 @@
+{
+    "Huffman": {
+        "Tamanho Comprimido (KB)": 8130.763671875,
+        "Taxa de Compress\u00e3o (%)": 73.3972042260537,
+        "Tempo de Compress\u00e3o (s)": 13.522214099997655,
+        "Tempo de Descompress\u00e3o (s)": 18.508394700009376,
+        "Verifica\u00e7\u00e3o de Integridade": "ID\u00caNTICOS",
+        "Entropia de Shannon (bits/s\u00edmbolo)": 1.979764293164767,
+        "Comprimento M\u00e9dio do C\u00f3digo (bits/s\u00edmbolo)": 2.1890008604339126,
+        "Overhead de Espa\u00e7o (Cabe\u00e7alho KB)": 0.12109375
+    },
+    "LZW (Te\u00f3rico - Bin\u00e1rio)": {
+        "Tamanho Comprimido (KB)": 8132.8564453125,
+        "Taxa de Compress\u00e3o (%)": 73.39035694496108,
+        "Tempo de Compress\u00e3o (s)": 22.483676299918443,
+        "Tempo de Descompress\u00e3o (s)": 5.909317199955694,
+        "Verifica\u00e7\u00e3o de Integridade": "ID\u00caNTICOS",
+        "Tamanho Final do Dicion\u00e1rio": 3028635,
+        "Taxa de Redu\u00e7\u00e3o de S\u00edmbolos": 10.047507578309196,
+        "Uso de Mem\u00f3ria (Dicion\u00e1rio KB)": 236752.482421875
+    },
+    "LZW (Real - JSON)": {
+        "Tamanho Comprimido (KB)": 24087.2294921875,
+        "Taxa de Compress\u00e3o (%)": 21.189734101191625
+    },
+    "info_arquivo": {
+        "nome_base": "plant_thaliana_sequence",
+        "tamanho_original_kb": 30563.568359375,
+        "num_bases": 30427671
+    }
+}

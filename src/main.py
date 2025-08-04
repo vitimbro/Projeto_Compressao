@@ -225,7 +225,7 @@ def main():
     # 1. Encontra todos os arquivos .fasta na pasta data/
     data_path = 'data'
     try:
-        fasta_files = [f for f in os.listdir(data_path) if f.endswith(('.fasta', '.fa'))]
+        fasta_files = [f for f in os.listdir(data_path) if f.endswith(('.fasta', '.fa', '.fna'))]
     except FileNotFoundError:
         print(f"ERRO: A pasta '{data_path}' não foi encontrada. Crie-a e adicione seus arquivos .fasta.")
         return
@@ -391,6 +391,28 @@ def main():
     tamanho_original_kb = tamanho_original / 1024
     num_bases = len(texto_original)
     gerar_relatorio_markdown(resultados, arquivo_base, tamanho_original_kb, num_bases)
+
+
+    # --- 7. SALVAR RESULTADOS EM ARQUIVO JSON ---
+    # Garante que a pasta 'resultados' exista
+    output_dir_results = 'resultados'
+    if not os.path.exists(output_dir_results):
+        os.makedirs(output_dir_results)
+
+    # Salva o dicionário completo de resultados em um arquivo JSON
+    path_resultado_json = os.path.join(output_dir_results, f'resultados_{arquivo_base}.json')
+    with open(path_resultado_json, 'w', encoding='utf-8') as f:
+        # Adiciona informações do arquivo original ao dicionário para uso posterior
+        resultados['info_arquivo'] = {
+            'nome_base': arquivo_base,
+            'tamanho_original_kb': tamanho_original / 1024,
+            'num_bases': len(texto_original)
+        }
+        json.dump(resultados, f, indent=4)
+    
+    print(f"\n[ETAPA 7: Resultados Salvos]")
+    print(f"Dicionário de resultados salvo em: '{path_resultado_json}'")
+    
         
     print("--- FIM DO PROCESSO ---")
 

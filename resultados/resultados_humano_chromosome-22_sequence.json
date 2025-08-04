@@ -1,0 +1,31 @@
+{
+    "Huffman": {
+        "Tamanho Comprimido (KB)": 15772.125,
+        "Taxa de Compress\u00e3o (%)": 69.1017757454353,
+        "Tempo de Compress\u00e3o (s)": 23.69868180004414,
+        "Tempo de Descompress\u00e3o (s)": 34.74360899999738,
+        "Verifica\u00e7\u00e3o de Integridade": "ID\u00caNTICOS",
+        "Entropia de Shannon (bits/s\u00edmbolo)": 2.316159561268955,
+        "Comprimento M\u00e9dio do C\u00f3digo (bits/s\u00edmbolo)": 2.5424702688794163,
+        "Overhead de Espa\u00e7o (Cabe\u00e7alho KB)": 0.0947265625
+    },
+    "LZW (Te\u00f3rico - Bin\u00e1rio)": {
+        "Tamanho Comprimido (KB)": 9722.7275390625,
+        "Taxa de Compress\u00e3o (%)": 80.95278753700056,
+        "Tempo de Compress\u00e3o (s)": 55.205368900089525,
+        "Tempo de Descompress\u00e3o (s)": 7.494190400000662,
+        "Verifica\u00e7\u00e3o de Integridade": "ID\u00caNTICOS",
+        "Tamanho Final do Dicion\u00e1rio": 3620645,
+        "Taxa de Redu\u00e7\u00e3o de S\u00edmbolos": 14.036738583412284,
+        "Uso de Mem\u00f3ria (Dicion\u00e1rio KB)": 297134.447265625
+    },
+    "LZW (Real - JSON)": {
+        "Tamanho Comprimido (KB)": 29263.4912109375,
+        "Taxa de Compress\u00e3o (%)": 42.67164926051309
+    },
+    "info_arquivo": {
+        "nome_base": "humano_chromosome-22_sequence",
+        "tamanho_original_kb": 51045.4091796875,
+        "num_bases": 50818468
+    }
+}

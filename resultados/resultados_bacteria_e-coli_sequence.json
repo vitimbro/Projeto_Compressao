@@ -1,0 +1,31 @@
+{
+    "Huffman": {
+        "Tamanho Comprimido (KB)": 1133.2734375,
+        "Taxa de Compress\u00e3o (%)": 75.69359746997861,
+        "Tempo de Compress\u00e3o (s)": 1.947888300055638,
+        "Tempo de Descompress\u00e3o (s)": 2.650569499935955,
+        "Verifica\u00e7\u00e3o de Integridade": "ID\u00caNTICOS",
+        "Entropia de Shannon (bits/s\u00edmbolo)": 1.9998190013576105,
+        "Comprimento M\u00e9dio do C\u00f3digo (bits/s\u00edmbolo)": 2.0,
+        "Overhead de Espa\u00e7o (Cabe\u00e7alho KB)": 0.0546875
+    },
+    "LZW (Te\u00f3rico - Bin\u00e1rio)": {
+        "Tamanho Comprimido (KB)": 1329.53125,
+        "Taxa de Compress\u00e3o (%)": 71.4842679009297,
+        "Tempo de Compress\u00e3o (s)": 2.6455485000042245,
+        "Tempo de Descompress\u00e3o (s)": 0.8114704999607056,
+        "Verifica\u00e7\u00e3o de Integridade": "ID\u00caNTICOS",
+        "Tamanho Final do Dicion\u00e1rio": 544831,
+        "Taxa de Redu\u00e7\u00e3o de S\u00edmbolos": 8.523423727817605,
+        "Uso de Mem\u00f3ria (Dicion\u00e1rio KB)": 41779.5439453125
+    },
+    "LZW (Real - JSON)": {
+        "Tamanho Comprimido (KB)": 3941.953125,
+        "Taxa de Compress\u00e3o (%)": 15.453149928147248
+    },
+    "info_arquivo": {
+        "nome_base": "bacteria_e-coli_sequence",
+        "tamanho_original_kb": 4662.4482421875,
+        "num_bases": 4641652
+    }
+}

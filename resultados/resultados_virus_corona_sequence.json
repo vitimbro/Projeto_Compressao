@@ -1,0 +1,31 @@
+{
+    "Huffman": {
+        "Tamanho Comprimido (KB)": 7.3466796875,
+        "Taxa de Compress\u00e3o (%)": 75.62137463948929,
+        "Tempo de Compress\u00e3o (s)": 0.012091899989172816,
+        "Tempo de Descompress\u00e3o (s)": 0.017883899970911443,
+        "Verifica\u00e7\u00e3o de Integridade": "ID\u00caNTICOS",
+        "Entropia de Shannon (bits/s\u00edmbolo)": 1.957024260612652,
+        "Comprimento M\u00e9dio do C\u00f3digo (bits/s\u00edmbolo)": 2.0,
+        "Overhead de Espa\u00e7o (Cabe\u00e7alho KB)": 0.04296875
+    },
+    "LZW (Te\u00f3rico - Bin\u00e1rio)": {
+        "Tamanho Comprimido (KB)": 9.083984375,
+        "Taxa de Compress\u00e3o (%)": 69.85644382514016,
+        "Tempo de Compress\u00e3o (s)": 0.011105400044471025,
+        "Tempo de Descompress\u00e3o (s)": 0.004769599996507168,
+        "Verifica\u00e7\u00e3o de Integridade": "ID\u00caNTICOS",
+        "Tamanho Final do Dicion\u00e1rio": 5979,
+        "Taxa de Redu\u00e7\u00e3o de S\u00edmbolos": 5.2241439552760305,
+        "Uso de Mem\u00f3ria (Dicion\u00e1rio KB)": 440.2939453125
+    },
+    "LZW (Real - JSON)": {
+        "Tamanho Comprimido (KB)": 31.3251953125,
+        "Taxa de Compress\u00e3o (%)": -3.9469846722188118
+    },
+    "info_arquivo": {
+        "nome_base": "virus_corona_sequence",
+        "tamanho_original_kb": 30.1357421875,
+        "num_bases": 29903
+    }
+}
